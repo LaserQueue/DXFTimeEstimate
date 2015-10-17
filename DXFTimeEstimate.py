@@ -14,7 +14,7 @@ def receive_dxf(**kwargs):
 	t = parse_dxf(kwargs["args"]["dxf_data"])
 	printer.color_print("Estimate: {time}", time=t)
 	serve_connection({
-		"action": "estimate",
+		"action": "dxf_estimate",
 		"time": t
 	}, kwargs["ws"])
 speed = 10
