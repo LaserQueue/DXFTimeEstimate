@@ -1,6 +1,9 @@
 from QueueConfig import *
+from ParseArgs import args
 from jsonhandler import SocketCommand
 import ezdxf, math, tempfile
+
+CONFIGDIR = os.path.join(os.path.dirname(__file__), "config.json")
 
 def dist(coord1, coord2):
 	xdist = coord2[0] - coord1[0]
@@ -12,17 +15,24 @@ printer.setname("DXFTimeEst")
 
 def receive_dxf(**kwargs):
 	t = parse_dxf(kwargs["args"]["dxf_data"])
-	printer.color_print("Estimate: {time}", time=t)
+	if args.loud:
+		printer.color_print("Estimate: {time}", time=t)
 	serve_connection({
 		"action": "dxf_estimate",
 		"time": t
 	}, kwargs["ws"])
-speed = 10
-initmove = 3
+
+try:
+	config = Config(CONFIGDIR)
+except:
+	config = {}
+speed = config.get("speed", 10)
+initmove = config.get("initmove", 3)
+
 def parse_dxf(data):
-	fs = tempfile.NamedTemporaryFile()
-	fs.write(bytes(data, 'UTF-8'))
-	dxf = ezdxf.readfile(fs.name)
+	with tempfile.NamedTemporaryFile() as fs:
+		fs.write(bytes(data, 'UTF-8'))
+		dxf = ezdxf.readfile(fs.name)
 
 	modelspace = dxf.modelspace()
 
