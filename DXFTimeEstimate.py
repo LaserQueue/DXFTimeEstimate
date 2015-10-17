@@ -1,6 +1,6 @@
 from QueueConfig import *
 from jsonhandler import SocketCommand
-import ezdxf, math
+import ezdxf, math, tempfile
 
 def dist(coord1, coord2):
 	xdist = coord2[0] - coord1[0]
@@ -16,8 +16,10 @@ def receive_dxf(**kwargs):
 speed = 10
 initmove = 3
 def parse_dxf(data):
-	fs = io.StringIO(data)
-	dxf = ezdxf.read(fs)
+	with tempfile.NamedTemporaryFile() as fs:
+		fs.write(data)
+		dxf = ezdxf.read(fs)
+
 	modelspace = dxf.modelspace()
 
 	totaldist = 0
