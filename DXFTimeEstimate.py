@@ -17,7 +17,7 @@ speed = 10
 initmove = 3
 def parse_dxf(data):
 	with tempfile.NamedTemporaryFile() as fs:
-		fs.write(data)
+		fs.write(bytes(data, 'UTF-8'))
 		dxf = ezdxf.read(fs)
 
 	modelspace = dxf.modelspace()
