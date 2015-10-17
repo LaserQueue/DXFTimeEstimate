@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# proof of concept hack
+
 speed = 10
 initmove = 3
 
