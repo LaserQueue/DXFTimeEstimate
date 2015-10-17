@@ -11,7 +11,7 @@ printer = PluginPrinterInstance()
 printer.setname("DXFTimeEst")
 
 def receive_dxf(**kwargs):
-	printer.color_print("Estimate: {t}", t=parse_dxf["args"]["dxf_data"])
+	printer.color_print("Estimate: {t}", t=parse_dxf(kwargs["args"]["dxf_data"]))
 
 speed = 10
 initmove = 3
