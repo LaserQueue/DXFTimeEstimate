@@ -1,5 +1,6 @@
 from QueueConfig import *
 from jsonhandler import SocketCommand
+import ezdxf
 
 printer = PluginPrinterInstance()
 printer.setname("DXFTimeEst")
