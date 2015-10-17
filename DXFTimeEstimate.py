@@ -16,9 +16,9 @@ def receive_dxf(**kwargs):
 speed = 10
 initmove = 3
 def parse_dxf(data):
-	with tempfile.NamedTemporaryFile() as fs:
-		fs.write(bytes(data, 'UTF-8'))
-		dxf = ezdxf.read(fs)
+	fs = tempfile.NamedTemporaryFile()
+	fs.write(bytes(data, 'UTF-8'))
+	dxf = ezdxf.readfile(fs.name)
 
 	modelspace = dxf.modelspace()
 
