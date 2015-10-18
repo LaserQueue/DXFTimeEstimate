@@ -63,5 +63,5 @@ def parse_dxf(data):
 	return totaldist / speed + initmove
 
 socketCommands = [
-	SocketCommand("send_dxf", receive_dxf, {"dxf_data": str})
+	SocketCommand("send_dxf", receive_dxf, {"dxf_data": str, "material": str})
 ]

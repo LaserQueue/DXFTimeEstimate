@@ -2,7 +2,7 @@
 	"defaultspeed": 10,
 	"initmove": 3,
 	"materials": {
-		"a": 10, 
+		"a": 10,
 		"c": 10,
 		"f": 10,
 		"o": 10,
