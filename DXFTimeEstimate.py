@@ -26,8 +26,9 @@ try:
 	config = Config(CONFIGDIR)
 except:
 	config = {}
-speed = config.get("speed", 10)
+speed = config.get("defaultspeed", 10)
 initmove = config.get("initmove", 3)
+materials = config.get("materials", {})
 
 def parse_dxf(data):
 	with tempfile.NamedTemporaryFile() as fs:
