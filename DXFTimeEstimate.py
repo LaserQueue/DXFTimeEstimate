@@ -14,9 +14,9 @@ printer = PluginPrinterInstance()
 printer.setname("DXFTimeEst")
 
 def receive_dxf(**kwargs):
-	t = parse_dxf(kwargs["args"]["dxf_data"])
+	t = parse_dxf(kwargs["args"]["dxf_data"], kwargs["args"]["material"])
 	if args.loud:
-		printer.color_print("Estimate: {time}", time=t)
+		printer.color_print("Estimate: {time}s", time=t)
 	serve_connection({
 		"action": "dxf_estimate",
 		"time": t
@@ -31,7 +31,12 @@ speed = config.get("defaultspeed", 10)
 initmove = config.get("initmove", 3)
 materials = config.get("materials", {})
 
-def parse_dxf(data):
+def parse_dxf(data, material):
+	if material in materials:
+		speed = materials[material]
+	else:
+		print("not sure what the hell the thing is")
+
 	with tempfile.NamedTemporaryFile() as fs:
 		fs.write(bytes(data, 'UTF-8'))
 		dxf = ezdxf.readfile(fs.name)
@@ -61,7 +66,7 @@ def parse_dxf(data):
 		# elif el.dxftype() == "SPLINE":
 		else:
 			printer.color_print("Unsupported object of type {type} found. Ommitting.", type=el.dxftype(), color=bcolors.RED)
-	return totaldist / speed + initmove
+	return round( (totaldist / speed + initmove) ) / 60.0
 
 socketCommands = [
 	SocketCommand("send_dxf", receive_dxf, {"dxf_data": str, "material": str})
