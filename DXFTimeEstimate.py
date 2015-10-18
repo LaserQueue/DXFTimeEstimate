@@ -25,6 +25,7 @@ def receive_dxf(**kwargs):
 try:
 	config = Config(CONFIGDIR)
 except:
+	printer.color_print("Config file for {name} isn't valid. Falling back on default values.", color=ansi_colors.RED)
 	config = {}
 speed = config.get("defaultspeed", 10)
 initmove = config.get("initmove", 3)
