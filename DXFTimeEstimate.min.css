@@ -1,0 +1,10 @@
+.dxf-file-picker-label{
+	margin: 0;
+	padding: 0;
+	border-width: 0;
+}
+
+.job-file-upload {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
