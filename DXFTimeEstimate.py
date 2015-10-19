@@ -2,6 +2,7 @@ from QueueConfig import *
 from ParseArgs import args
 from jsonhandler import SocketCommand
 import ezdxf, math, tempfile
+from time import gmtime, strftime
 
 CONFIGDIR = os.path.join(os.path.dirname(__file__), "config.json")
 
@@ -14,7 +15,7 @@ printer = PluginPrinterInstance()
 printer.setname("DXFTimeEst")
 
 def receive_dxf(**kwargs):
-	t = parse_dxf(kwargs["args"]["dxf_data"], kwargs["args"]["material"])
+	t = parse_dxf(kwargs["args"]["dxf_data"], kwargs["args"]["material"], kwargs["args"]["name"])
 	if args.loud:
 		printer.color_print("Estimate: {time}s", time=t)
 	serve_connection({
@@ -31,7 +32,7 @@ defaultspeed = config.get("defaultspeed", 10)
 initmove = config.get("initmove", 3)
 materials = config.get("materials", {})
 
-def parse_dxf(data, material):
+def parse_dxf(data, material, name):
 	if material in materials:
 		speed = materials[material]
 	else:
@@ -43,6 +44,9 @@ def parse_dxf(data, material):
 		dxf = ezdxf.readfile(fs.name)
 
 	modelspace = dxf.modelspace()
+
+	if config["save_dxf_to"]:
+		dxf.saveas(os.path.join(config["save_dxf_to"], strftime(name + " %Y-%m-%d %H.%M.%S.dxf", gmtime())))
 
 	totaldist = 0
 	for el in modelspace:
@@ -70,5 +74,5 @@ def parse_dxf(data, material):
 	return round(totaldist / speed + initmove) / 60
 
 socketCommands = [
-	SocketCommand("send_dxf", receive_dxf, {"dxf_data": str, "material": str})
+	SocketCommand("send_dxf", receive_dxf, {"dxf_data": str, "material": str, "name": str})
 ]
