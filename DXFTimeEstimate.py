@@ -66,7 +66,7 @@ def parse_dxf(data, material):
 			totaldist += circumference * arcportion
 		# elif el.dxftype() == "SPLINE":
 		else:
-			printer.color_print("Unsupported object of type {type} found. Ommitting.", type=el.dxftype(), color=bcolors.RED)
+			printer.color_print("Unsupported object of type {type} found. Ommitting.", type=el.dxftype(), color=ansi_colors.RED)
 	return round(totaldist / speed + initmove) / 60
 
 socketCommands = [
