@@ -46,7 +46,10 @@ def parse_dxf(data, material, name):
 	modelspace = dxf.modelspace()
 
 	if config["save_dxf_to"]:
-		dxf.saveas(os.path.join(config["save_dxf_to"], strftime(name + " %Y-%m-%d %H.%M.%S.dxf", gmtime())))
+		try:
+			dxf.saveas(os.path.join(config["save_dxf_to"], strftime(name + " %Y-%m-%d %H.%M.%S.dxf", gmtime())))
+		except:
+			printer.color_print("Failed to copy file to target {target} for lasercutting.", target=config["save_dxf_to"], color=ansi_colors.RED)
 
 	totaldist = 0
 	for el in modelspace:
