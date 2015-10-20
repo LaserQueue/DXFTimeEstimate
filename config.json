@@ -9,5 +9,7 @@
 		"tw": 5,
 		"w": 15
 	},
-	"save_dxf_to": ""
+	"save_dxf_to": "",
+	"save_dxf_fail_message": "Failed to copy file to target {target} for lasercutting.",
+	"save_dxf_fail_user_message": "Failed to copy file to server for lasercutting."
 }

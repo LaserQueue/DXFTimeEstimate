@@ -15,7 +15,7 @@ printer = PluginPrinterInstance()
 printer.setname("DXFTimeEst")
 
 def receive_dxf(**kwargs):
-	t = parse_dxf(kwargs["args"]["dxf_data"], kwargs["args"]["material"], kwargs["args"]["name"])
+	t = parse_dxf(kwargs["args"]["dxf_data"], kwargs["args"]["material"], kwargs["args"]["name"], kwargs["ws"])
 	if args.loud:
 		printer.color_print("Estimate: {time}s", time=t)
 	serve_connection({
@@ -32,7 +32,7 @@ defaultspeed = config.get("defaultspeed", 10)
 initmove = config.get("initmove", 3)
 materials = config.get("materials", {})
 
-def parse_dxf(data, material, name):
+def parse_dxf(data, material, name, ws):
 	if material in materials:
 		speed = materials[material]
 	else:
@@ -49,7 +49,13 @@ def parse_dxf(data, material, name):
 		try:
 			dxf.saveas(os.path.join(config["save_dxf_to"], strftime(name + " %Y-%m-%d %H.%M.%S.dxf", gmtime())))
 		except:
-			printer.color_print("Failed to copy file to target {target} for lasercutting.", target=config["save_dxf_to"], color=ansi_colors.RED)
+			printer.color_print(config["save_dxf_fail_message"], target=config["save_dxf_to"], color=ansi_colors.RED)
+			if config["save_dxf_fail_user_message"]:
+				serve_connection({
+					"action": "notification",
+					"title": "Failed to save file",
+					"text": config["save_dxf_fail_user_message"]
+				}, ws)
 
 	totaldist = 0
 	for el in modelspace:
