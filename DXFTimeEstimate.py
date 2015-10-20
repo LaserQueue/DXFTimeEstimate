@@ -4,15 +4,19 @@ from jsonhandler import SocketCommand
 import ezdxf, math, tempfile
 from time import gmtime, strftime
 
-CONFIGDIR = os.path.join(os.path.dirname(__file__), "config.json")
+CONFIGPATH = os.path.join(os.path.dirname(__file__), "config.json")
+DEFAULTCONFIGPATH = os.path.join(os.path.dirname(__file__), "defaultconf.json")
+
+if not os.path.exists(CONFIGPATH):
+	with open(CONFIGPATH, "w") as fs:
+		fs.write("{}")
 
 def dist(coord1, coord2):
 	xdist = coord2[0] - coord1[0]
 	ydist = coord2[1] - coord1[1]
 	return math.sqrt(xdist**2 + ydist**2)
 
-printer = PluginPrinterInstance()
-printer.setname("DXFTimeEst")
+printer = PluginPrinterInstance("DXFTimeEst")
 
 def receive_dxf(**kwargs):
 	t = parse_dxf(kwargs["args"]["dxf_data"], kwargs["args"]["material"], kwargs["args"]["name"], kwargs["ws"])
@@ -24,7 +28,7 @@ def receive_dxf(**kwargs):
 	}, kwargs["ws"])
 
 try:
-	config = Config(CONFIGDIR)
+	config = MergerConfig(CONFIGPATH, DEFAULTCONFIGPATH)
 except:
 	printer.color_print("Config file for {name} isn't valid. Falling back on default values.", name=__name__, color=ansi_colors.RED)
 	config = {}

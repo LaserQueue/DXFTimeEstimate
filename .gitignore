@@ -80,3 +80,6 @@ node_modules/
 
 ### JS symbol analysis ###
 .tags*
+
+
+config.json
