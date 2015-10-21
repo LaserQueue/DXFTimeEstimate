@@ -90,8 +90,8 @@ def parse_dxf(data, material, name, ws):
 
 
 eventRegistry = Registry()
-eventRegistry.on('socket', (
+eventRegistry.on('socket',
 	'parse_dxf', 
 	recieve_dxf, 
 	{"dxf_data": str, "material": str, "name": str}
-))
+)
