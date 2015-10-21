@@ -94,5 +94,4 @@ eventRegistry.on('socket', (
 	'send_dxf', 
 	recieve_dxf, 
 	{"dxf_data": str, "material": str, "name": str}
-	)
-)
+))
