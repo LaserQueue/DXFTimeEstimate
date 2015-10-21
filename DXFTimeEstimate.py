@@ -86,6 +86,13 @@ def parse_dxf(data, material, name, ws):
 			printer.color_print("Unsupported object of type {type} found. Ommitting.", type=el.dxftype(), color=ansi_colors.RED)
 	return round(totaldist / speed + initmove) / 60
 
-socketCommands = [
-	SocketCommand("send_dxf", receive_dxf, {"dxf_data": str, "material": str, "name": str})
-]
+
+
+
+eventRegistry = Registry()
+eventRegistry.on('socket', (
+	'send_dxf', 
+	recieve_dxf, 
+	{"dxf_data": str, "material": str, "name": str}
+	)
+)
