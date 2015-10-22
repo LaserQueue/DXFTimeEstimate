@@ -17,7 +17,7 @@ printer = PluginPrinterInstance("DXFTimeEst")
 def receive_dxf(**kwargs):
 	t = parse_dxf(kwargs["args"]["dxf_data"], kwargs["args"]["material"], kwargs["args"]["name"], kwargs["ws"])
 	if args.loud:
-		printer.color_print("Estimate: {time}s", time=t)
+		printer.color_print("Estimate: {time}s", time=t*60)
 	serve_connection({
 		"action": "dxf_estimate",
 		"time": t
