@@ -7,10 +7,6 @@ from time import gmtime, strftime
 CONFIGPATH = os.path.join(os.path.dirname(__file__), "config.json")
 DEFAULTCONFIGPATH = os.path.join(os.path.dirname(__file__), "defaultconf.json")
 
-if not os.path.exists(CONFIGPATH):
-	with open(CONFIGPATH, "w") as fs:
-		fs.write("{}")
-
 def dist(coord1, coord2):
 	xdist = coord2[0] - coord1[0]
 	ydist = coord2[1] - coord1[1]
@@ -27,20 +23,15 @@ def receive_dxf(**kwargs):
 		"time": t
 	}, kwargs["ws"])
 
-try:
-	config = MergerConfig(CONFIGPATH, DEFAULTCONFIGPATH)
-except:
+config = MergerConfig(CONFIGPATH, DEFAULTCONFIGPATH)
+if config.new:
 	printer.color_print("Config file for {name} isn't valid. Falling back on default values.", name=__name__, color=ansi_colors.RED)
-	config = {}
-defaultspeed = config.get("defaultspeed", 10)
-initmove = config.get("initmove", 3)
-materials = config.get("materials", {})
 
 def parse_dxf(data, material, name, ws):
-	if material in materials:
-		speed = materials[material]
+	if material in config["materials"]:
+		speed = config["materials"][material]
 	else:
-		speed = defaultspeed
+		speed = config["defaultspeed"]
 		printer.color_print("Invalid material code {code}. Falling back on the default speed.", code=material, color=ansi_colors.RED)
 
 	with tempfile.NamedTemporaryFile() as fs:
@@ -84,9 +75,7 @@ def parse_dxf(data, material, name, ws):
 		# elif el.dxftype() == "SPLINE":
 		else:
 			printer.color_print("Unsupported object of type {type} found. Ommitting.", type=el.dxftype(), color=ansi_colors.RED)
-	return round(totaldist / speed + initmove) / 60
-
-
+	return round(totaldist / speed + config["initmove"]) / 60
 
 
 eventRegistry = Registry()
