@@ -12,7 +12,7 @@ def dist(coord1, coord2):
 	ydist = coord2[1] - coord1[1]
 	return math.sqrt(xdist**2 + ydist**2)
 
-printer = PluginPrinterInstance("DXFTimeEst")
+printer = Printer("DXFTimeEst")
 
 def receive_dxf(**kwargs):
 	t = parse_dxf(kwargs["args"]["dxf_data"], kwargs["args"]["material"], kwargs["args"]["name"], kwargs["ws"])
