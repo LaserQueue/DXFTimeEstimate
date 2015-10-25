@@ -78,8 +78,8 @@ def parse_dxf(data, material, name, ws):
 	return round(totaldist / speed + config["initmove"]) / 60
 
 
-eventRegistry = Registry()
-eventRegistry.on('socket',
+registry = Registry()
+registry.on('socket',
 	'parse_dxf',
 	receive_dxf, 
 	{"dxf_data": str, "material": str, "name": str}
