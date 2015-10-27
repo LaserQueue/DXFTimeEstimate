@@ -81,6 +81,6 @@ def parse_dxf(data, material, name, ws):
 registry = Registry()
 registry.on('socket',
 	'parse_dxf',
-	receive_dxf, 
+	receive_dxf,
 	{"dxf_data": str, "material": str, "name": str}
 )
