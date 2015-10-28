@@ -1,4 +1,5 @@
 {
+	"enable": "false",
 	"defaultspeed": 10,
 	"initmove": 3,
 	"materials": {

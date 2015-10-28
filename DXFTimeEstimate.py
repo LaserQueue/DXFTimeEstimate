@@ -84,3 +84,9 @@ registry.on('socket',
 	receive_dxf,
 	{"dxf_data": str, "material": str, "name": str}
 )
+
+if(config["enable"]):
+	registry.on('initialPacket', {
+		"action": "dxfte_send_materials",
+		"materials": config["materials"]
+	})
