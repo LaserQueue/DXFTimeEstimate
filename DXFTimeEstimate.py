@@ -4,16 +4,33 @@ from jsonhandler import SocketCommand
 import ezdxf, math, tempfile
 from time import gmtime, strftime
 
+# Initialize config
 CONFIGPATH = os.path.join(os.path.dirname(__file__), "config.json")
 DEFAULTCONFIGPATH = os.path.join(os.path.dirname(__file__), "defaultconf.json")
+config = MergerConfig(CONFIGPATH, DEFAULTCONFIGPATH)
+if config.new:
+	printer.color_print("Config file for {name} isn't valid. Falling back on default values.", name=__name__, color=ansi_colors.RED)
 
+# Initialize printer
+printer = Printer("DXFTimeEst")
+
+# Initialize registry
+registry = Registry()
+
+# If plugin is enabled, register to send initial packet
+if config["enable"]:
+	registry.on('initialPacket', {
+		"action": "dxfte_send_materials",
+		"materials": config["materials"]
+	})
+
+# Calculate point-to-point distance for 2D or 3D coords
 def dist(coord1, coord2):
 	xdist = coord2[0] - coord1[0]
 	ydist = coord2[1] - coord1[1]
 	return math.sqrt(xdist**2 + ydist**2)
 
-printer = Printer("DXFTimeEst")
-
+# Receive a DXF file
 def receive_dxf(**kwargs):
 	t = parse_dxf(kwargs["args"]["dxf_data"], kwargs["args"]["material"], kwargs["args"]["name"], kwargs["ws"])
 	if args.loud:
@@ -23,10 +40,17 @@ def receive_dxf(**kwargs):
 		"time": t
 	}, kwargs["ws"])
 
-config = MergerConfig(CONFIGPATH, DEFAULTCONFIGPATH)
-if config.new:
-	printer.color_print("Config file for {name} isn't valid. Falling back on default values.", name=__name__, color=ansi_colors.RED)
+# Register parse_dxf which is passed to receive_dxf above
+registry.on('socket',
+	'parse_dxf',
+	receive_dxf, {
+		"dxf_data": str,
+		"material": str,
+		"name": str
+	}
+)
 
+# Actually parse DXF file
 def parse_dxf(data, material, name, ws):
 	if material in config["materials"]:
 		speed = config["materials"][material]
@@ -76,17 +100,3 @@ def parse_dxf(data, material, name, ws):
 		else:
 			printer.color_print("Unsupported object of type {type} found. Ommitting.", type=el.dxftype(), color=ansi_colors.RED)
 	return round(totaldist / speed + config["initmove"]) / 60
-
-
-registry = Registry()
-registry.on('socket',
-	'parse_dxf',
-	receive_dxf,
-	{"dxf_data": str, "material": str, "name": str}
-)
-
-if config["enable"]:
-	registry.on('initialPacket', {
-		"action": "dxfte_send_materials",
-		"materials": config["materials"]
-	})
