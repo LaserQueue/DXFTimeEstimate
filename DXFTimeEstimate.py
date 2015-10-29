@@ -19,7 +19,7 @@ printer = Printer("DXFTimeEst")
 registry = Registry()
 
 # If plugin is enabled, register to send initial packet
-if config["enable"]:
+if config["enable_initial_packet"]:
 	registry.register('initialPacket', {
 		"action": "dxfte_send_materials",
 		"materials": config["materials"]
