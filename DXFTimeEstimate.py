@@ -32,10 +32,17 @@ def dist(coord1, coord2):
 
 # Receive a DXF file
 def receive_dxf(**kwargs):
-	parse_dxf(kwargs["args"]["dxf_data"], kwargs["args"]["material"], kwargs["args"]["name"], kwargs["ws"])
+	material = kwargs["args"]["material"]
+	speed = 0
+	if material in config["materials"]:
+		speed = config["materials"][material]
+	else:
+		speed = config["defaultspeed"]
+		printer.color_print("Invalid material code {code}. Falling back on the default speed.", code=material, color=ansi_colors.RED)
+	parse_dxf(kwargs["args"]["dxf_data"], speed, kwargs["args"]["name"], kwargs["ws"])
 
 def receive_dxf_customspeed(**kwargs):
-	parse_dxf(kwargs["args"]["dxf_data"], kwargs["args"]["material"], kwargs["args"]["name"], kwargs["ws"])
+	parse_dxf(kwargs["args"]["dxf_data"], kwargs["args"]["material_speed"], kwargs["args"]["name"], kwargs["ws"])
 
 # Register parse_dxf which is passed to receive_dxf above
 registry.on('socket',
@@ -57,13 +64,7 @@ registry.on('socket',
 	})
 
 # Actually parse DXF file
-def parse_dxf(data, material, name, ws):
-	if material in config["materials"]:
-		speed = config["materials"][material]
-	else:
-		speed = config["defaultspeed"]
-		printer.color_print("Invalid material code {code}. Falling back on the default speed.", code=material, color=ansi_colors.RED)
-
+def parse_dxf(data, material_speed, name, ws):
 	with tempfile.NamedTemporaryFile() as fs:
 		fs.write(bytes(data, 'UTF-8'))
 		dxf = ezdxf.readfile(fs.name)
@@ -105,7 +106,7 @@ def parse_dxf(data, material, name, ws):
 		# elif el.dxftype() == "SPLINE":
 		else:
 			printer.color_print("Unsupported object of type {type} found. Ommitting.", type=el.dxftype(), color=ansi_colors.RED)
-	t = round(totaldist / speed + config["initmove"]) / 60
+	t = round(totaldist / material_speed + config["initmove"]) / 60
 	if args.loud:
 		printer.color_print("Estimate: {time}s", time=t*60)
 	serve_connection({
