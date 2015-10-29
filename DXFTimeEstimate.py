@@ -1,6 +1,7 @@
 from QueueConfig import *
 from ParseArgs import args
 from jsonhandler import SocketCommand
+from ActionFramework import any_number
 import ezdxf, math, tempfile
 from time import gmtime, strftime
 
@@ -19,7 +20,7 @@ registry = Registry()
 
 # If plugin is enabled, register to send initial packet
 if config["enable"]:
-	registry.on('initialPacket', {
+	registry.register('initialPacket', {
 		"action": "dxfte_send_materials",
 		"materials": config["materials"]
 	})
@@ -45,7 +46,7 @@ def receive_dxf_customspeed(**kwargs):
 	parse_dxf(kwargs["args"]["dxf_data"], kwargs["args"]["material_speed"], kwargs["args"]["name"], kwargs["ws"])
 
 # Register parse_dxf which is passed to receive_dxf above
-registry.on('socket',
+registry.register('socket',
 	'parse_dxf',
 	receive_dxf, {
 		"dxf_data": str,
@@ -55,11 +56,11 @@ registry.on('socket',
 )
 
 # Register parse_dxf_customspeed for handling custom DXF speeds
-registry.on('socket',
+registry.register('socket',
 	'parse_dxf_customspeed',
 	receive_dxf_customspeed, {
 		"dxf_data": str,
-		"material_speed": int,
+		"material_speed": any_number,
 		"name": str
 	})
 
