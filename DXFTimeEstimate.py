@@ -32,13 +32,10 @@ def dist(coord1, coord2):
 
 # Receive a DXF file
 def receive_dxf(**kwargs):
-	t = parse_dxf(kwargs["args"]["dxf_data"], kwargs["args"]["material"], kwargs["args"]["name"], kwargs["ws"])
-	if args.loud:
-		printer.color_print("Estimate: {time}s", time=t*60)
-	serve_connection({
-		"action": "dxf_estimate",
-		"time": t
-	}, kwargs["ws"])
+	parse_dxf(kwargs["args"]["dxf_data"], kwargs["args"]["material"], kwargs["args"]["name"], kwargs["ws"])
+
+def receive_dxf_customspeed(**kwargs):
+	parse_dxf(kwargs["args"]["dxf_data"], kwargs["args"]["material"], kwargs["args"]["name"], kwargs["ws"])
 
 # Register parse_dxf which is passed to receive_dxf above
 registry.on('socket',
@@ -49,6 +46,15 @@ registry.on('socket',
 		"name": str
 	}
 )
+
+# Register parse_dxf_customspeed for handling custom DXF speeds
+registry.on('socket',
+	'parse_dxf_customspeed',
+	receive_dxf_customspeed, {
+		"dxf_data": str,
+		"material_speed": int,
+		"name": str
+	})
 
 # Actually parse DXF file
 def parse_dxf(data, material, name, ws):
@@ -99,4 +105,11 @@ def parse_dxf(data, material, name, ws):
 		# elif el.dxftype() == "SPLINE":
 		else:
 			printer.color_print("Unsupported object of type {type} found. Ommitting.", type=el.dxftype(), color=ansi_colors.RED)
-	return round(totaldist / speed + config["initmove"]) / 60
+	t = round(totaldist / speed + config["initmove"]) / 60
+	if args.loud:
+		printer.color_print("Estimate: {time}s", time=t*60)
+	serve_connection({
+		"action": "dxf_estimate",
+		"time": t
+	}, ws)
+	return t
