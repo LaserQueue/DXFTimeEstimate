@@ -1,5 +1,5 @@
 {
-	"enable_initial_packet": false,
+	"enable": true,
 	"defaultspeed": 10,
 	"initmove": 3,
 	"materials": {

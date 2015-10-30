@@ -15,15 +15,8 @@ if config.new:
 # Initialize printer
 printer = Printer("DXFTimeEst")
 
-# Initialize registry
-registry = Registry()
 
-# If plugin is enabled, register to send initial packet
-if config["enable_initial_packet"]:
-	registry.register('initialPacket', {
-		"action": "dxfte_send_materials",
-		"materials": config["materials"]
-	})
+
 
 # Calculate point-to-point distance for 2D or 3D coords
 def dist(coord1, coord2):
@@ -45,24 +38,6 @@ def receive_dxf(**kwargs):
 def receive_dxf_customspeed(**kwargs):
 	parse_dxf(kwargs["args"]["dxf_data"], kwargs["args"]["material_speed"], kwargs["args"]["name"], kwargs["ws"])
 
-# Register parse_dxf which is passed to receive_dxf above
-registry.register('socket',
-	'parse_dxf',
-	receive_dxf, {
-		"dxf_data": str,
-		"material": str,
-		"name": str
-	}
-)
-
-# Register parse_dxf_customspeed for handling custom DXF speeds
-registry.register('socket',
-	'parse_dxf_customspeed',
-	receive_dxf_customspeed, {
-		"dxf_data": str,
-		"material_speed": any_number,
-		"name": str
-	})
 
 # Actually parse DXF file
 def parse_dxf(data, material_speed, name, ws):
@@ -115,3 +90,32 @@ def parse_dxf(data, material_speed, name, ws):
 		"time": t
 	}, ws)
 	return t
+
+
+# If plugin is enabled
+if config["enable"]:
+	# Initialize registry
+	registry = Registry()
+
+	registry.register('initialPacket', {
+		"action": "dxfte_send_materials",
+		"materials": config["materials"]
+	})
+	# Register parse_dxf which is passed to receive_dxf above
+	registry.register('socket',
+	'parse_dxf_customspeed',
+	receive_dxf_customspeed, {
+		"dxf_data": str,
+		"material_speed": any_number,
+		"name": str
+	})
+	# Register parse_dxf_customspeed for handling custom DXF speeds
+	registry.register('socket',
+	'parse_dxf',
+	receive_dxf, {
+		"dxf_data": str,
+		"material": str,
+		"name": str
+	})
+
+
