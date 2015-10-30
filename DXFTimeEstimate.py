@@ -5,6 +5,10 @@ from ActionFramework import any_number
 import ezdxf, math, tempfile
 from time import gmtime, strftime
 
+
+# Initialize printer
+printer = Printer("DXFTimeEst")
+
 # Initialize config
 CONFIGPATH = os.path.join(os.path.dirname(__file__), "config.json")
 DEFAULTCONFIGPATH = os.path.join(os.path.dirname(__file__), "defaultconf.json")
@@ -12,8 +16,7 @@ config = MergerConfig(CONFIGPATH, DEFAULTCONFIGPATH)
 if config.new:
 	printer.color_print("Config file for {name} isn't valid. Falling back on default values.", name=__name__, color=ansi_colors.RED)
 
-# Initialize printer
-printer = Printer("DXFTimeEst")
+
 
 
 
